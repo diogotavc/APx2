@@ -15,10 +15,8 @@ def registerPurchase(products):
 
         if len(user_input) == 0:
             break
-        elif len(user_input) == 1:
-            amount = 1
-        else:
-            amount = int(user_input[1])
+
+        amount = 1 if len(user_input) == 1 else int(user_input[1])
 
         code = user_input[0]
 
