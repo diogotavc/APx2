@@ -1,7 +1,11 @@
 def loadDataBase(filename, products):
     for line in open(filename, "r", encoding="utf8").readlines()[1:]:  # Lê o ficheiro por linhas, exceto a primeira
         reading = line.strip().split(";")  # Remove os espaços, e dá split pelos ";"
-        products.update({reading[0]: (reading[1], reading[2], float(reading[3]), float(reading[4].strip("%")) / 100)})
+        products.update({reading[0]:
+                             (reading[1],  # Nome
+                              reading[2],  # Secção
+                              float(reading[3]),  # Preço base, em float
+                              float(reading[4].strip("%")) / 100)})  # IVA em forma decimal, em float
 
     return products
 
@@ -12,8 +16,11 @@ def registerPurchase(products):
     while True:
         user_input = input("Code? ").split()  # Faz split pelos espaços
 
-        if len(user_input) == 0:  # Se a lista tiver length de 0 (nenhum input), dá break
-            break
+        if len(user_input) == 0:
+            break  # Se a lista tiver length de 0 (nenhum input), dá break
+
+        if len(user_input) > 1 and not user_input[1].isnumeric():
+            continue    # Se a quantidade introduzida não for um número inteiro positivo, o loop recomeça
 
         amount = 1 if len(user_input) == 1 else int(user_input[1])
         # O amount é 1, se o length da lista for 1 (não foi dada uma quantidade específica)
@@ -45,7 +52,7 @@ def bill(products, purchases):
 
     for code, quantity in bill.items():  # Iterar pelos códigos e quantidades dos produtos
         section = products[code][1]  # Extrair a secção de cada código
-        if section not in sections:  # Verificar se a secção já existe; Caso não esteja presente:
+        if section not in sections:  # Caso a secção não esteja presente no dicionário:
             sections[section] = []  # Criar uma chave no dicionário das secções
         sections[section].append({code: quantity})  # Dar append do código: quantidade
 
@@ -60,17 +67,19 @@ def bill(products, purchases):
             total_liquido += price * (1 + tax)
             tax_percentage = int(tax * 100)
             total_price = round(price * (1 + tax), 2)
-            print("{:>4} {:<30} ({:>2}%) {:>10}".format(quantity, name, tax_percentage, total_price))
+            print("{:>4} {:<30} ({:>2}%) {:>10}"
+                  .format(quantity, name, tax_percentage, total_price))
 
-    print(" {:>40} {:>10}\n {:>40} {:>10}\n {:>40} {:>10}".format("Total Bruto:", round(total_bruto, 2), "Total IVA:", round(total_iva, 2), "Total Liquido:", round(total_liquido, 2)))
+    print(" {:>40} {:>10}\n {:>40} {:>10}\n {:>40} {:>10}"
+          .format("Total Bruto:", round(total_bruto, 2),
+                  "Total IVA:", round(total_iva, 2),
+                  "Total Liquido:", round(total_liquido, 2)))
 
     return
 
 
 def main(args):
     products = {'p1': ('Ketchup.', 'Mercearia Salgado', 1.59, 0.23)}
-
-    purchases = {}
 
     loadDataBase("produtos.txt", products)
 
@@ -79,12 +88,15 @@ def main(args):
 
     menu = "(C)ompra (F)atura (S)air ? "
 
+    purchases = {}
+
     while True:
 
         op = input(menu).upper()
 
         if op == "C":
-            purchases[len(purchases) + 1] = registerPurchase(products)
+            purchases[len(purchases) + 1] = registerPurchase(products)  # Atualiza o dicionário
+            # com o número de compra como chave, e o dicionário da última compra feita como valor
 
         if op == "F":
             bill(products, purchases)
