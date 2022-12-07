@@ -41,8 +41,7 @@ def registerPurchase(products):
 def bill(products, purchases):
     while True:
         try:
-            bill_number = int(input("Numero compra? "))
-            bill = purchases[bill_number]
+            bill = purchases[int(input("Numero compra? "))]
             break
         except (ValueError, KeyError):
             return  # Volta ao menu, se o valor introduzido não for inteiro ou não pertencer ao dicionário
