@@ -44,8 +44,8 @@ def bill(products, purchases):
             bill_number = int(input("Numero compra? "))
             bill = purchases[bill_number]
             break
-        except ValueError:  # Se o valor introduzido não for um inteiro, o ciclo repete-se
-            continue
+        except (ValueError, KeyError):
+            return  # Volta ao menu, se o valor introduzido não for inteiro ou não pertencer ao dicionário
 
     total_bruto = total_iva = total_liquido = 0
     sections = {}
